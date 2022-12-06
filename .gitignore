@@ -1,3 +1,4 @@
 venv/
 new_user_credentials.csv
 .env
+__pycache__/

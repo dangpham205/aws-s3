@@ -1,8 +1,16 @@
 import boto3
-
+import os
+import shutil
 
 class MyS3():
     
+    # content_type sẽ hỗ trợ show image trong browser,
+    # còn word, excel sẽ buộc download
+    content_types = {
+        'word': 'application/msword',
+        'excel': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'image': 'image/jpeg'
+    }
     
     def __init__(self):
         self.__s3 = boto3.resource('s3')
@@ -16,46 +24,45 @@ class MyS3():
         return False
     
     
-    def upload_file(self, upload_file, bucket_name, key, file_type, public_access = False):
+    def upload_file(self, upload_file, bucket_name, location, public_access = False):
         '''
-        upload_file: path dẫn tới file cần upload
-        bucket_name: tên bucket
-        key: location muốn lưu trong bucket
-        file_type: hiện tại chấp nhận 3 gtri (word | excel | image)
+        upload_file (File): path dẫn tới file cần upload
+        bucket_name (str): tên bucket
+        key (str): location muốn lưu trong bucket (mặc định ở root của bucket)
         '''
+        if location != '' and location[-1] != '/':
+            location += '/'
 
-        # content_type sẽ hỗ trợ show image trong browser,
-        # còn word, excel sẽ buộc download
-        content_type = {
-            'word': 'application/msword',
-            'excel': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            'image': 'image/jpeg'
+        # Xét xem file có dc hỗ trợ không 
+        file_type = self.get_file_type(upload_file.filename)
+        if not file_type:
+            return 'Định dạng file không hỗ trợ'
+
+        extra_args = {
+            'ContentType': self.content_types[file_type]
         }
-            
-        # try:
         if public_access:
-            print('Starting to upload (public_access)')
-            result = self.__s3.meta.client.upload_file(upload_file, 
-                                    bucket_name, 
-                                    key,
-                                    ExtraArgs={
-                                        "ContentType": content_type[file_type],
-                                        'ACL': 'public-read'
-                                    }
+            extra_args['ACL'] = 'public-read'
+            
+        try:
+            self.write_file(upload_file)
+            self.__s3.meta.client.upload_file(
+                upload_file.filename, 
+                bucket_name, 
+                location+upload_file.filename,
+                ExtraArgs=extra_args
             )
-        else:
-            print('Starting to upload (no public_access)')
-            result = self.__s3.meta.client.upload_file(upload_file, 
-                                    bucket_name, 
-                                    key,
-                                    ExtraArgs={
-                                        "ContentType": content_type[file_type],
-                                    }
-            )
-        return True
-        # except Exception:
-        #     print('Somewhere went wrong :D')
-        #     return False
+            return {
+                'host': 'https://haidawng-bucket-1.s3.ap-northeast-1.amazonaws.com/',
+                'filename': location+upload_file.filename,
+                'path': f'https://haidawng-bucket-1.s3.ap-northeast-1.amazonaws.com/{location+upload_file.filename}',
+            }
+        except Exception:
+            print('Somewhere went wrong :D')
+            return 'Somewhere went wrong :D'
+        finally:
+            print('Xóa file')
+            self.delete_file(upload_file.filename)
         
     def clear_bucket(self, bucket_name):
         bucket = self.get_bucket(bucket_name)
@@ -78,3 +85,35 @@ class MyS3():
             ExpiresIn=expires_time #second
         )
         return url
+    
+    
+    def write_file(self, file):
+        with open(f'{file.filename}', 'wb') as buffer:
+            shutil.copyfileobj(file.file, buffer)
+    
+    def delete_file(self, filename):
+        os.remove(filename)
+
+    def get_file_type(self, filename):
+        """
+            Trả về file type của file name
+            Nếu file không dược hỗ trợ sẽ trả về False
+        """
+        file_name = filename
+        if '/' in filename:
+            file_name = filename.split('/')[-1]
+        elif '\\' in filename:
+            file_name = filename.split('\\')[-1]
+        
+        file_extension = file_name.split('.')[-1]
+
+        # allowed_file_types = ['doc', 'docx', 'xls', 'xlsx', 'jpeg', 'jpg', 'png', 'PNG']
+        
+        if file_extension == 'doc' or file_extension == 'docx':
+            return 'word'
+        elif file_extension == 'xls' or file_extension == 'xlsx':
+            return 'excel'
+        elif file_extension == 'jpeg' or file_extension == 'png' or file_extension == 'jpg' or file_extension == 'PNG':
+            return 'image'
+        else:
+            return False

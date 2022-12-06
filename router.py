@@ -1,8 +1,7 @@
 from fastapi import APIRouter, File, UploadFile
 from MyS3 import MyS3
-import shutil
 from typing import List
-import os
+from schemas import *
 
 router = APIRouter(
     prefix="/utils",
@@ -12,29 +11,24 @@ router = APIRouter(
 )
 
 @router.post('/upload_single', summary='upload public')
-async def upload(file: UploadFile = File(...)):
-    result = write_file(file)
-    if result:
-        s3 = MyS3()
-        result = s3.upload_file(
-            upload_file= file.filename, 
-            bucket_name= 'haidawng-bucket-1', 
-            key= file.filename,
-            file_type= get_file_type(file.filename), 
-            public_access=False
-        )
-    delete_file(file)
-    if result:
-        return {
-            'host': 'https://haidawng-bucket-1.s3.ap-northeast-1.amazonaws.com/',
-            'filename': file.filename,
-        }
+# async def upload(file: UploadFile = File(...), file_location: str = ''):
+async def upload(file: UploadFile = File(...), file_location: str = ''):
+    """
+    +file (File): file cần upload\n
+    +file_location (str): dir sẽ chứa file, default ở root của bucket\n
+    """
+    s3 = MyS3()
+    result = s3.upload_file(
+        upload_file= file, 
+        bucket_name= 'haidawng-bucket-1', 
+        location= file_location,
+        public_access=True
+    )
     return result
 
 @router.post('/upload_multi')
 async def upload_multi(files: List[UploadFile] = File(...)):
     for file in files:
-        # print(file.file)
         s3 = MyS3()
         s3.upload_file(file.file, 'haidawng-bucket-1', file.filename)
         # s3.upload_file('reqs.txt', 'haidawng-bucket-1', 'reqs.txt')
@@ -52,46 +46,19 @@ async def delete(file_name: str):
     return 
 
 @router.get('/get_presigned_url', summary='Lấy presigned url')
-async def get_presigned(file_location: str, expires_time: int = 60):
+async def get_presigned(bucket_name: str, file_name: str, file_location: str = '', expires_time: int = 60):
+    """
+    +bucket_name (str): bucket chứa file cần lấy\n
+    +file_name (str): tên file cần lấy\n
+    +file_location (str): dir chứa file trong bucket, default ở root của bucket\n
+    +expires_time (int): số second url có hiệu lực\n
+    """
+    if file_location[-1] != '/':
+        file_location += '/'
     s3 = MyS3()
-    
-    result = s3.get_presigned_url(bucket='haidawng-bucket-1', key=file_location, expires_time=expires_time)
+    result = s3.get_presigned_url(bucket=bucket_name, key=file_location+file_name, expires_time=expires_time)
     return result
 
-# @router.post('/cms_upload')
-# async def upload_multi(files: File()):
-#     for file in files:
-#         # print(file.file)
-#         s3 = MyS3()
-#         s3.upload_file(file.file, 'haidawng-bucket-1', file.filename)
-#         # s3.upload_file('reqs.txt', 'haidawng-bucket-1', 'reqs.txt')
-#         return file.filename
-
-
-def write_file(file):
-    try:
-        with open(f'{file.filename}', 'wb') as buffer:
-            shutil.copyfileobj(file.file, buffer)
-        return True
-    except Exception:
-        return False
     
-def delete_file(file):
-    os.remove(file.filename)
-    
-def get_file_type(filename):
-    file_name = filename
-    if '/' in filename:
-        file_name = filename.split('/')[-1]
-    elif '\\' in filename:
-        file_name = filename.split('\\')[-1]
-    
-    file_extension = file_name.split('.')[-1]
-    if file_extension == 'doc' or file_extension == 'docx':
-        return 'word'
-    if file_extension == 'xls' or file_extension == 'xls':
-        return 'excel'
-    if file_extension == 'jpeg' or file_extension == 'png' or file_extension == 'jpg' or file_extension == 'PNG':
-        return 'image'
 
         
