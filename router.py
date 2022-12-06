@@ -10,7 +10,7 @@ router = APIRouter(
     # dependencies=[Depends(JWTBearer())],
 )
 
-@router.post('/upload_single', summary='upload public')
+@router.post('/upload_single', summary='upload không public')
 # async def upload(file: UploadFile = File(...), file_location: str = ''):
 async def upload(file: UploadFile = File(...), file_location: str = ''):
     """
@@ -22,17 +22,25 @@ async def upload(file: UploadFile = File(...), file_location: str = ''):
         upload_file= file, 
         bucket_name= 'haidawng-bucket-1', 
         location= file_location,
-        public_access=True
+        public_access=False
     )
     return result
 
-@router.post('/upload_multi')
-async def upload_multi(files: List[UploadFile] = File(...)):
+@router.post('/upload_multi', summary='upload multiple files (chung dir)')
+async def upload_multi(files: List[UploadFile] = File(...), file_location: str = ''):
+    """
+    +file (File): file cần upload\n
+    +file_location (str): dir sẽ chứa file, default ở root của bucket\n
+    """
     for file in files:
         s3 = MyS3()
-        s3.upload_file(file.file, 'haidawng-bucket-1', file.filename)
-        # s3.upload_file('reqs.txt', 'haidawng-bucket-1', 'reqs.txt')
-        return file.filename
+        result = s3.upload_file(
+            upload_file= file, 
+            bucket_name= 'haidawng-bucket-1', 
+            location= file_location,
+            public_access=False
+        )
+    return result
     
 @router.delete('/clear_bucket', summary='Xóa hết tất cả file trong bucket')
 async def delete(bucket_name: str):
@@ -41,9 +49,15 @@ async def delete(bucket_name: str):
     return result
 
 @router.delete('/delete_file', summary='Xóa file theo tên')
-async def delete(file_name: str):
+async def delete(bucket_name: str, file_name: str, file_location: str = ''):
+    """
+    +bucket_name (str): bucket chứa file cần xóa\n
+    +file_name (str): tên file cần lấy\n
+    +file_location (str): dir chứa file trong bucket, default ở root của bucket\n
+    """
     s3 = MyS3()
-    return 
+    result = s3.remove_file(bucket_name, file_name, file_location)
+    return  result
 
 @router.get('/get_presigned_url', summary='Lấy presigned url')
 async def get_presigned(bucket_name: str, file_name: str, file_location: str = '', expires_time: int = 60):

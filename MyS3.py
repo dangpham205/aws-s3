@@ -75,6 +75,16 @@ class MyS3():
                 return False
         return False
     
+    def remove_file(self, bucket_name, file_name, file_location):
+        if file_location != '' and file_location[-1] != '/':
+            file_location += '/'
+        key = file_location+file_name
+        try:
+            self.__s3.meta.client.delete_object(Bucket=bucket_name, Key=key)
+            return 'Xóa thành công'
+        except Exception:
+            return 'Đã xảy ra lỗi :P'
+    
     def get_presigned_url(self, bucket, key, expires_time=60):
         url = boto3.client('s3').generate_presigned_url(
             ClientMethod='get_object', 
