@@ -85,6 +85,10 @@ class MyS3():
             ExpiresIn=expires_time #second
         )
         return url
+
+    def download_file(self, bucket_name, file, download_location):
+        boto3.client('s3').download_file(bucket_name, file, download_location)
+        # pass
     
     
     def write_file(self, file):

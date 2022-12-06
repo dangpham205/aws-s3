@@ -59,6 +59,10 @@ async def get_presigned(bucket_name: str, file_name: str, file_location: str = '
     result = s3.get_presigned_url(bucket=bucket_name, key=file_location+file_name, expires_time=expires_time)
     return result
 
+@router.get('/download_file', summary='Download file từ bucket')
+async def down(bucket_name: str, file: str, download_location: str):
+    s3 = MyS3()
+    s3.download_file(bucket_name, file, download_location)
     
 
         
