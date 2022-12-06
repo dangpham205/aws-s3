@@ -68,7 +68,7 @@ class MyS3():
                 return False
         return False
     
-    def generate_presigned_url(self, bucket, key, expires_time=60):
+    def get_presigned_url(self, bucket, key, expires_time=60):
         url = boto3.client('s3').generate_presigned_url(
             ClientMethod='get_object', 
             Params={

@@ -52,10 +52,10 @@ async def delete(file_name: str):
     return 
 
 @router.get('/get_presigned_url', summary='Lấy presigned url')
-async def get_presigned(key: str):
+async def get_presigned(file_location: str, expires_time: int = 60):
     s3 = MyS3()
     
-    result = s3.generate_presigned_url(bucket='haidawng-bucket-1', key=key)
+    result = s3.get_presigned_url(bucket='haidawng-bucket-1', key=file_location, expires_time=expires_time)
     return result
 
 # @router.post('/cms_upload')
