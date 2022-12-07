@@ -3,6 +3,7 @@ import os
 import shutil
 from decouple import config
 import time
+from utils.handle_return import HandleReturn
 class MyS3():
     
     # content_type sẽ hỗ trợ show image trong browser,
@@ -37,7 +38,7 @@ class MyS3():
         # Xét xem file có dc hỗ trợ không 
         file_type = self.get_file_type(upload_file.filename)
         if not file_type:
-            return 'Định dạng file không hỗ trợ'
+            return HandleReturn().response(500, False, 'Định dạng file không hỗ trợ')
 
         extra_args = {
             'ContentType': self.content_types[file_type]
@@ -58,10 +59,8 @@ class MyS3():
                 'url': f'https://{domain}/{location+upload_file.filename}',
             }
         except Exception:
-            print('Somewhere went wrong :D')
-            return 'Somewhere went wrong :D'
+            return HandleReturn().response(500, False, 'Somewhere went wrong :D')
         finally:
-            print('Xóa file')
             self.delete_file(upload_file.filename)
         
     def clear_bucket(self, bucket_name):
@@ -84,13 +83,13 @@ class MyS3():
             invalidation_key = '/'+key
             res = self.create_cloudfront_invalidation(key=invalidation_key)
             if not res:
-                return 'Đã xảy ra lỗi :P'
-                
+                return HandleReturn().response(500, False, 'Somewhere went wrong :D')
+
         try:
             self.__s3.meta.client.delete_object(Bucket=bucket_name, Key=key)
-            return 'Xóa thành công'
+            return HandleReturn().response(200, True, 'Xóa thành công')
         except Exception:
-            return 'Đã xảy ra lỗi :P'
+            return HandleReturn().response(500, False, 'Somewhere went wrong :D')
 
     def create_cloudfront_invalidation(self, key):
         client = boto3.client('cloudfront')
@@ -137,7 +136,7 @@ class MyS3():
             },
             ExpiresIn=expires_time #second
         )
-        return url
+        return HandleReturn().response(200, True, url)
 
     def download_file(self, bucket_name, file, download_location):
         boto3.client('s3').download_file(bucket_name, file, download_location)

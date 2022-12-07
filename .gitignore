@@ -3,3 +3,4 @@ new_user_credentials.csv
 .env
 __pycache__/
 app/__pycache__/
+utils/__pycache__/

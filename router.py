@@ -1,7 +1,7 @@
 from fastapi import APIRouter, File, UploadFile
 from MyS3 import MyS3
 from typing import List
-from schemas import *
+from utils.schemas import *
 from decouple import config
 
 router = APIRouter(
