@@ -4,11 +4,15 @@ from typing import List
 from schemas import *
 
 router = APIRouter(
-    prefix="/utils",
+    prefix="",
     tags=["utils"],
     responses={404: {"description": "Not found"}},
     # dependencies=[Depends(JWTBearer())],
 )
+
+@router.get('/')
+async def root():
+    return {'root': 'root'}
 
 @router.post('/upload_single', summary='upload không public')
 # async def upload(file: UploadFile = File(...), file_location: str = ''):
