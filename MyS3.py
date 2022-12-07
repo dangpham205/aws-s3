@@ -24,7 +24,7 @@ class MyS3():
         return False
     
     
-    def upload_file(self, upload_file, bucket_name, location, public_access = False):
+    def upload_file(self, upload_file, bucket_name, location, public_access):
         '''
         upload_file (File): path dẫn tới file cần upload
         bucket_name (str): tên bucket
@@ -44,39 +44,25 @@ class MyS3():
         if public_access:
             extra_args['ACL'] = 'public-read'
             
-        # try:
-        #     self.write_file(upload_file)
-        #     self.__s3.meta.client.upload_file(
-        #         upload_file.filename, 
-        #         bucket_name, 
-        #         location+upload_file.filename,
-        #         ExtraArgs=extra_args
-        #     )
-        #     return {
-        #         'host': 'https://haidawng-bucket-1.s3.ap-northeast-1.amazonaws.com/',
-        #         'filename': location+upload_file.filename,
-        #         'path': f'https://haidawng-bucket-1.s3.ap-northeast-1.amazonaws.com/{location+upload_file.filename}',
-        #     }
-        # except Exception:
-        #     print('Somewhere went wrong :D')
-        #     return 'Somewhere went wrong :D'
-        # finally:
-        #     print('Xóa file')
-        #     self.delete_file(upload_file.filename)
-        
-        self.write_file(upload_file)
-        self.__s3.meta.client.upload_file(
-            upload_file.filename, 
-            bucket_name, 
-            location+upload_file.filename,
-            ExtraArgs=extra_args
-        )
-        self.delete_file(upload_file.filename)
-        return {
-            'host': 'https://haidawng-bucket-1.s3.ap-northeast-1.amazonaws.com/',
-            'filename': location+upload_file.filename,
-            'path': f'https://haidawng-bucket-1.s3.ap-northeast-1.amazonaws.com/{location+upload_file.filename}',
-        }
+        try:
+            self.write_file(upload_file)
+            self.__s3.meta.client.upload_file(
+                upload_file.filename, 
+                bucket_name, 
+                location+upload_file.filename,
+                ExtraArgs=extra_args
+            )
+            return {
+                'host': 'https://haidawng-bucket-1.s3.ap-northeast-1.amazonaws.com/',
+                'filename': location+upload_file.filename,
+                'path': f'https://haidawng-bucket-1.s3.ap-northeast-1.amazonaws.com/{location+upload_file.filename}',
+            }
+        except Exception:
+            print('Somewhere went wrong :D')
+            return 'Somewhere went wrong :D'
+        finally:
+            print('Xóa file')
+            self.delete_file(upload_file.filename)
         
     def clear_bucket(self, bucket_name):
         bucket = self.get_bucket(bucket_name)
