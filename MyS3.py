@@ -1,6 +1,7 @@
 import boto3
 import os
 import shutil
+from decouple import config
 
 class MyS3():
     
@@ -52,8 +53,9 @@ class MyS3():
                 location+upload_file.filename,
                 ExtraArgs=extra_args
             )
+            domain = config('CLOUDFRONT_DOMAIN')
             return {
-                'url': f'https://haidawng-bucket-1.s3.ap-northeast-1.amazonaws.com/{location+upload_file.filename}',
+                'url': f'https://{domain}/{location+upload_file.filename}',
             }
         except Exception:
             print('Somewhere went wrong :D')
