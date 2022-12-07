@@ -2,7 +2,7 @@ import boto3
 import os
 import shutil
 from decouple import config
-
+import time
 class MyS3():
     
     # content_type sẽ hỗ trợ show image trong browser,
@@ -75,15 +75,58 @@ class MyS3():
                 return False
         return False
     
-    def remove_file(self, bucket_name, file_name, file_location):
+    def remove_file(self, bucket_name, file_name, file_location, remove_on_cloudfront):
         if file_location != '' and file_location[-1] != '/':
             file_location += '/'
         key = file_location+file_name
+
+        if remove_on_cloudfront:
+            invalidation_key = '/'+key
+            res = self.create_cloudfront_invalidation(key=invalidation_key)
+            if not res:
+                return 'Đã xảy ra lỗi :P'
+                
         try:
             self.__s3.meta.client.delete_object(Bucket=bucket_name, Key=key)
             return 'Xóa thành công'
         except Exception:
             return 'Đã xảy ra lỗi :P'
+
+    def create_cloudfront_invalidation(self, key):
+        client = boto3.client('cloudfront')
+        distribution_id = config('CLOUDFRONT_DISTRIBUTION_ID')
+        res = client.create_invalidation(
+            DistributionId=distribution_id,
+            InvalidationBatch={
+                'Paths': {
+                    'Quantity': 1,
+                    'Items': [
+                        key
+                    ]
+                },
+                'CallerReference': str(time.time()).replace(".", "")
+            }
+        )
+        # response mẫu
+        #{
+        #     'Location': 'string',
+        #     'Invalidation': {
+        #         'Id': 'string',
+        #         'Status': 'string',
+        #         'CreateTime': datetime(2015, 1, 1),
+        #         'InvalidationBatch': {
+        #             'Paths': {
+        #                 'Quantity': 123,
+        #                 'Items': [
+        #                     'string',
+        #                 ]
+        #             },
+        #             'CallerReference': 'string'
+        #         }
+        #     }
+        # }
+        invalidation_id = res['Invalidation']['Id']
+        return invalidation_id
     
     def get_presigned_url(self, bucket, key, expires_time=60):
         url = boto3.client('s3').generate_presigned_url(

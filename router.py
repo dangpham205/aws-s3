@@ -62,7 +62,12 @@ async def delete( file_name: str, bucket_name: str = None, dir: str = ''):
     """
     s3 = MyS3()
     bucket_name = config('BUCKET_NAME')
-    result = s3.remove_file(bucket_name, file_name, dir)
+    result = s3.remove_file(
+        bucket_name=bucket_name, 
+        file_name=file_name, 
+        file_location=dir, 
+        remove_on_cloudfront=True
+    )
     return  result
 
 @router.get('/get_presigned_url', summary='Lấy presigned url')
