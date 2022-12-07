@@ -43,7 +43,7 @@ class MyS3():
         }
         if public_access:
             extra_args['ACL'] = 'public-read'
-            
+
         try:
             self.write_file(upload_file)
             self.__s3.meta.client.upload_file(
@@ -53,9 +53,7 @@ class MyS3():
                 ExtraArgs=extra_args
             )
             return {
-                'host': 'https://haidawng-bucket-1.s3.ap-northeast-1.amazonaws.com/',
-                'filename': location+upload_file.filename,
-                'path': f'https://haidawng-bucket-1.s3.ap-northeast-1.amazonaws.com/{location+upload_file.filename}',
+                'url': f'https://haidawng-bucket-1.s3.ap-northeast-1.amazonaws.com/{location+upload_file.filename}',
             }
         except Exception:
             print('Somewhere went wrong :D')
