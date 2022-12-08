@@ -6,7 +6,7 @@ from decouple import config
 
 router = APIRouter(
     prefix="",
-    tags=["utils"],
+    tags=["APIS"],
     responses={404: {"description": "Not found"}},
     # dependencies=[Depends(JWTBearer())],
 )

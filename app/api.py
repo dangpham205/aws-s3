@@ -3,13 +3,13 @@ from fastapi.middleware.cors import CORSMiddleware
 import router
 
 desc = """
-Khởi tạo, quản lý data phục vụ cho workflow
+Phục vụ upload file ảnh, video, âm thanh
 """
 tags_metadata = [
 ]
 
 app = FastAPI(
-    title='API for workflow',
+    title='APIs upload',
     description=desc,
     version='0.0.1',
     contact={
