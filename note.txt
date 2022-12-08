@@ -1,3 +1,5 @@
+CORS policy cho bucket 
+
 [
     {
         "AllowedHeaders": [

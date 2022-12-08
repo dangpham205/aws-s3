@@ -1,11 +1,19 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-import router
+from routers import baongay, workflow
 
 desc = """
 Phục vụ upload file ảnh, video, âm thanh
 """
 tags_metadata = [
+    {
+        "name": "APIS",
+        "description": "anh Hội, anh Trí xài phần này",
+    },
+    {
+        "name": "Workflow",
+        "description": "Workflow xài phần này",
+    }
 ]
 
 app = FastAPI(
@@ -34,4 +42,5 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(router.router)
+app.include_router(baongay.router)
+app.include_router(workflow.router)

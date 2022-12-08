@@ -4,3 +4,4 @@ new_user_credentials.csv
 __pycache__/
 app/__pycache__/
 utils/__pycache__/
+routers/__pycache__/
