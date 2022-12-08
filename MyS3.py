@@ -29,13 +29,12 @@ class MyS3():
         return False
     
     
-    def upload_file(self, upload_file, public_access):
+    def upload_file(self, bucket_name, upload_file, public_access):
         '''
         upload_file (File): path dẫn tới file cần upload
         bucket_name (str): tên bucket
         key (str): location muốn lưu trong bucket (mặc định ở root của bucket)
         '''
-        bucket_name = config('BUCKET_NAME')
         key = None
         is_image = False
 
