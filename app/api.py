@@ -8,7 +8,7 @@ Phục vụ upload file ảnh, video, âm thanh
 tags_metadata = [
     {
         "name": "APIS",
-        "description": "anh Hội, anh Trí xài phần này",
+        "description": "Service CMS xài phần này",
     },
     {
         "name": "Workflow",

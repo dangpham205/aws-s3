@@ -11,9 +11,6 @@ router = APIRouter(
     # dependencies=[Depends(JWTBearer())],
 )
 
-@router.get('/')
-async def root():
-    return {'root': 'root'}
 
 @router.post('/upload_single', summary='upload không public')
 async def upload(file: UploadFile = File(...)):
