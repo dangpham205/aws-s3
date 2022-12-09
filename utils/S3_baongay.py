@@ -1,11 +1,10 @@
 import boto3
-import os
-import shutil
 from decouple import config
-import time
 from utils.handle_return import HandleReturn
 from PIL import Image
-class MyS3():
+from utils.utils import write_file, delete_file
+
+class S3_baongay():
     
     # content_type sẽ hỗ trợ show image trong browser,
     # còn word, excel sẽ buộc download
@@ -20,14 +19,6 @@ class MyS3():
     def __init__(self):
         self.__s3 = boto3.resource('s3')
             
-    def get_bucket(self, bucket_name):
-        for bucket in self.__s3.buckets.all():
-            # print(bucket.name)
-            if bucket.name == bucket_name:
-                my_bucket = self.__s3.Bucket(bucket.name)
-                return my_bucket
-        return False
-    
     
     def upload_file(self, bucket_name, upload_file, public_access):
         '''
@@ -67,7 +58,7 @@ class MyS3():
             
     def upload_to_s3(self, upload_file, bucket_name, key, extra_args, is_image=False):
         try:
-            self.write_file(upload_file)
+            write_file(upload_file)
             if is_image:
                 image = Image.open(upload_file.filename)
                 image_resized_PC = image.resize((400, 400))
@@ -100,20 +91,10 @@ class MyS3():
             return HandleReturn().response(500, False, 'Somewhere went wrong')
         finally:
             if is_image:
-                self.delete_file(image_resized_PC_name)
-                self.delete_file(image_resized_MOBILE_name)
-            self.delete_file(upload_file.filename)
-        
-    def clear_bucket(self, bucket_name):
-        bucket = self.get_bucket(bucket_name)
-        if bucket:
-            try:
-                for key in bucket.objects.all():
-                    key.delete()
-                return True
-            except Exception:
-                return False
-        return False
+                delete_file(image_resized_PC_name)
+                delete_file(image_resized_MOBILE_name)
+            delete_file(upload_file.filename)
+
     
     def remove_file(self, bucket_name, file_name, file_location, remove_on_cloudfront):
         if file_location != '' and file_location[-1] != '/':
@@ -131,43 +112,8 @@ class MyS3():
             return HandleReturn().response(200, True, 'Xóa thành công')
         except Exception:
             return HandleReturn().response(500, False, 'Somewhere went wrong :D')
-
-    def create_cloudfront_invalidation(self, key):
-        client = boto3.client('cloudfront')
-        distribution_id = config('CLOUDFRONT_DISTRIBUTION_ID')
-        res = client.create_invalidation(
-            DistributionId=distribution_id,
-            InvalidationBatch={
-                'Paths': {
-                    'Quantity': 1,
-                    'Items': [
-                        key
-                    ]
-                },
-                'CallerReference': str(time.time()).replace(".", "")
-            }
-        )
-        # response mẫu
-        #{
-        #     'Location': 'string',
-        #     'Invalidation': {
-        #         'Id': 'string',
-        #         'Status': 'string',
-        #         'CreateTime': datetime(2015, 1, 1),
-        #         'InvalidationBatch': {
-        #             'Paths': {
-        #                 'Quantity': 123,
-        #                 'Items': [
-        #                     'string',
-        #                 ]
-        #             },
-        #             'CallerReference': 'string'
-        #         }
-        #     }
-        # }
-        invalidation_id = res['Invalidation']['Id']
-        return invalidation_id
-    
+        
+            
     def get_presigned_url(self, file_name, expires_time=60, size=None):
         
         bucket_name = config('BUCKET_NAME')
@@ -196,17 +142,7 @@ class MyS3():
         
         return HandleReturn().response(200, True, url)
 
-    def download_file(self, bucket_name, file, download_location):
-        boto3.client('s3').download_file(bucket_name, file, download_location)
-        # pass
     
-    
-    def write_file(self, file):
-        with open(f'{file.filename}', 'wb') as buffer:
-            shutil.copyfileobj(file.file, buffer)
-    
-    def delete_file(self, filename):
-        os.remove(filename)
 
     def get_file_type(self, filename):
         """

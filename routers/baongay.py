@@ -1,5 +1,5 @@
 from fastapi import APIRouter, File, UploadFile
-from MyS3 import MyS3
+from utils.S3_baongay import S3_baongay
 from typing import List
 from utils.schemas import *
 from decouple import config
@@ -20,7 +20,7 @@ async def upload(file: UploadFile = File(...)):
     """
     +file (File): file cần upload, must be unique\n
     """
-    s3 = MyS3()
+    s3 = S3_baongay()
     result = s3.upload_file(
         upload_file= file, 
         bucket_name = config('BUCKET_NAME'),
@@ -36,7 +36,7 @@ async def get_presigned(obj: presigned_schema):
     +size (str | nullable): nếu là ảnh thì truyền vô, accepted values: 'PC' / 'MOBILE'\n
     +expires_time (int | nullable): số second url có hiệu lực, default 60 seconds\n
     """
-    s3 = MyS3()
+    s3 = S3_baongay()
     result = s3.get_presigned_url(file_name=obj.file_name, expires_time=obj.expires_time, size=obj.size)
     return result
 
