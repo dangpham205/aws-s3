@@ -66,8 +66,8 @@ class S3_baongay():
             write_file(file_slug)
             if is_image:
                 image = Image.open(file_name)
-                image_resized_PC = image.resize((600, 600))
-                image_resized_MOBILE = image.resize((200, 200))
+                image_resized_PC = image.resize((1170, 1654))
+                image_resized_MOBILE = image.resize((640, 905))
 
                 image_resized_PC_name = 'PC_'+file_name
                 image_resized_MOBILE_name = 'MOBILE_'+file_name

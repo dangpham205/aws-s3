@@ -27,7 +27,7 @@ async def upload(resource_slug: str):
 
 
 @router.post('/get_presigned_url', summary='Lấy presigned url')
-async def get_presigned(obj: presigned_schema):
+async def get_presigned(list: List[presigned_schema]):
     """
     +file_name (str): tên file cần lấy\n
     +size (str | nullable): nếu là ảnh thì truyền vô, accepted values: 'PC' / 'MOBILE'\n
@@ -35,10 +35,15 @@ async def get_presigned(obj: presigned_schema):
     """
     s3 = S3_baongay()
     slug = None
-    if obj.file_slug[0] == '/':
-        slug = obj.file_slug[1:]
-    result = s3.get_presigned_url(file_slug=slug, expire_time=obj.expire_time, size=obj.size)
-    return result
+    output = []
+    for obj in list:
+        if obj.file_slug[0] == '/':
+            slug = obj.file_slug[1:]
+        else:
+            slug = obj.file_slug
+        result = s3.get_presigned_url(file_slug=slug, expire_time=obj.expire_time, size=obj.size)
+        output.append(result)
+    return output
 
 
 
