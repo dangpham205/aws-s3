@@ -28,7 +28,10 @@ class S3_baongay():
         '''
         key = None
         is_image = False
+        upload_slug = None
         file_name = file_slug.split('/')[-1]
+        if file_slug[0] == '/':
+            upload_slug = file_slug[1:]
 
         # Xét xem file có dc hỗ trợ không 
         file_type = self.get_file_type(file_name)
@@ -36,7 +39,7 @@ class S3_baongay():
             return HandleReturn().response(500, False, 'Định dạng file không hỗ trợ')
         else:
             if file_type != 'image':
-                key = file_type+'/'+file_slug
+                key = file_type+'/'+upload_slug
             elif file_type == 'image':
                 key = file_type+'/'
                 is_image = True
@@ -48,7 +51,7 @@ class S3_baongay():
             extra_args['ACL'] = 'public-read'
         
         result = self.upload_to_s3(
-            file_slug=file_slug, 
+            file_slug=upload_slug, 
             bucket_name=bucket_name, 
             key=key, 
             extra_args=extra_args,

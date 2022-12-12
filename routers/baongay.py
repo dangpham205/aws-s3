@@ -34,7 +34,10 @@ async def get_presigned(obj: presigned_schema):
     +expires_time (int | nullable): số second url có hiệu lực, default 60 seconds\n
     """
     s3 = S3_baongay()
-    result = s3.get_presigned_url(file_slug=obj.file_slug, expire_time=obj.expire_time, size=obj.size)
+    slug = None
+    if obj.file_slug[0] == '/':
+        slug = obj.file_slug[1:]
+    result = s3.get_presigned_url(file_slug=slug, expire_time=obj.expire_time, size=obj.size)
     return result
 
 
