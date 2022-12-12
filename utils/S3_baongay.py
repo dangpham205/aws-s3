@@ -20,7 +20,7 @@ class S3_baongay():
         self.__s3 = boto3.resource('s3')
             
     
-    def upload_file(self, bucket_name, file_slug, public_access):
+    def upload_file(self, bucket_name, file, public_access):
         '''
         upload_file (File): path dẫn tới file cần upload
         bucket_name (str): tên bucket
@@ -29,11 +29,7 @@ class S3_baongay():
         key = None
         is_image = False
         upload_slug = None
-        file_name = file_slug.split('/')[-1]
-        if file_slug[0] == '/':
-            upload_slug = file_slug[1:]
-        else:
-            upload_slug = file_slug
+        file_name = file.filename
 
         # Xét xem file có dc hỗ trợ không 
         file_type = self.get_file_type(file_name)
@@ -41,7 +37,7 @@ class S3_baongay():
             return HandleReturn().response(500, False, 'Định dạng file không hỗ trợ')
         else:
             if file_type != 'image':
-                key = file_type+'/'+upload_slug
+                key = file_type+'/'+file_name
             elif file_type == 'image':
                 key = file_type+'/'
                 is_image = True
@@ -53,7 +49,7 @@ class S3_baongay():
             extra_args['ACL'] = 'public-read'
         
         result = self.upload_to_s3(
-            file_slug=upload_slug, 
+            upload_file=file, 
             bucket_name=bucket_name, 
             key=key, 
             extra_args=extra_args,
@@ -62,10 +58,10 @@ class S3_baongay():
         return result
 
             
-    def upload_to_s3(self, file_slug, bucket_name, key, extra_args, is_image=False):
-        # try:
-            file_name = file_slug.split('/')[-1]
-            write_file(file_slug)
+    def upload_to_s3(self, upload_file, bucket_name, key, extra_args, is_image=False):
+        try:
+            write_file(upload_file)
+            file_name = upload_file.filename
             if is_image:
                 image = Image.open(file_name)
                 image_resized_PC = image.resize((1170, 1654))
@@ -79,13 +75,13 @@ class S3_baongay():
                 self.__s3.meta.client.upload_file(
                     image_resized_PC_name, 
                     bucket_name, 
-                    f'{key}PC/{file_slug}',
+                    f'{key}PC/{file_name}',
                     ExtraArgs=extra_args
                 )
                 self.__s3.meta.client.upload_file(
                     image_resized_MOBILE_name, 
                     bucket_name, 
-                    f'{key}MOBILE/{file_slug}',
+                    f'{key}MOBILE/{file_name}',
                     ExtraArgs=extra_args
                 )
             else:
@@ -95,9 +91,9 @@ class S3_baongay():
                     key,
                     ExtraArgs=extra_args
                 )
-        # except Exception:
-        #     return HandleReturn().response(500, False, 'Somewhere went wrong')
-        # finally:
+        except Exception:
+            return HandleReturn().response(500, False, 'Somewhere went wrong')
+        finally:
             if is_image:
                 delete_file(image_resized_PC_name)
                 delete_file(image_resized_MOBILE_name)

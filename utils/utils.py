@@ -5,14 +5,13 @@ import time
 import urllib.request
 from decouple import config
 
-def write_file(file_slug):
-    domain = config('RESOURCE_URL')
-    source_url = domain+file_slug
-    
-    urllib.request.urlretrieve(source_url , source_url.split('/')[-1])
+def write_file(file):
+    # domain = config('RESOURCE_URL')
+    # source_url = domain+file_slug
+    # urllib.request.urlretrieve(source_url , source_url.split('/')[-1])
 
-    # with open(f'{file.filename}', 'wb') as buffer:
-    #     shutil.copyfileobj(file.file, buffer)
+    with open(f'{file.filename}', 'wb') as buffer:
+        shutil.copyfileobj(file.file, buffer)
         
 def delete_file(filename):
     os.remove(filename)

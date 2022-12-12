@@ -13,13 +13,13 @@ router = APIRouter(
 
 
 @router.post('/upload_single', summary='upload không public')
-async def upload(resource_slug: str):
+async def upload(file: UploadFile = File(...)):
     """
-    +resource_slug (str): slug tới file cần upload
+    +FILE (str): file cần upload
     """
     s3 = S3_baongay()
     result = s3.upload_file(
-        file_slug= resource_slug, 
+        file = file, 
         bucket_name = config('BUCKET_NAME'),
         public_access=False
     )
@@ -34,14 +34,9 @@ async def get_presigned(list: List[presigned_schema]):
     +expires_time (int | nullable): số second url có hiệu lực, default 60 seconds\n
     """
     s3 = S3_baongay()
-    slug = None
     output = []
     for obj in list:
-        if obj.file_slug[0] == '/':
-            slug = obj.file_slug[1:]
-        else:
-            slug = obj.file_slug
-        result = s3.get_presigned_url(file_slug=slug, expire_time=obj.expire_time, size=obj.size)
+        result = s3.get_presigned_url(file_slug=obj.file_name, expire_time=obj.expire_time, size=obj.size)
         output.append(result)
     return output
 
