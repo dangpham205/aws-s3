@@ -32,6 +32,8 @@ class S3_baongay():
         file_name = file_slug.split('/')[-1]
         if file_slug[0] == '/':
             upload_slug = file_slug[1:]
+        else:
+            upload_slug = file_slug
 
         # Xét xem file có dc hỗ trợ không 
         file_type = self.get_file_type(file_name)
