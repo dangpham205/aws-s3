@@ -16,7 +16,8 @@ router = APIRouter(
 @router.post('/upload_single', summary='upload không public')
 async def upload(file_slug: str, file: UploadFile = File(...)):
     """
-    +FILE (str): file cần upload
+    +file_slug (str): location/new_name mà file sẽ đc lưu\n
+    +file (File): file cần upload
     """
     s3 = S3_baongay()
     result = verify_file_type(file.filename, file_slug)
@@ -35,7 +36,7 @@ async def upload(file_slug: str, file: UploadFile = File(...)):
 @router.post('/get_presigned_url', summary='Lấy presigned url')
 async def get_presigned(list: List[presigned_schema]):
     """
-    +file_name (str): tên file cần lấy\n
+    +file_slug (str): tên file cần lấy\n
     +size (str | nullable): nếu là ảnh thì truyền vô, accepted values: 'PC' / 'MOBILE'\n
     +expires_time (int | nullable): số second url có hiệu lực, default 60 seconds\n
     """
