@@ -42,7 +42,7 @@ async def get_presigned(list: List[presigned_schema]):
     s3 = S3_baongay()
     output = []
     for obj in list:
-        result = s3.get_presigned_url(file_slug=obj.file_name, expire_time=obj.expire_time, size=obj.size)
+        result = s3.get_presigned_url(file_slug=obj.file_slug, expire_time=obj.expire_time, size=obj.size)
         output.append(result)
     return output
 
