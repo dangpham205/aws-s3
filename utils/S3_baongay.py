@@ -20,7 +20,7 @@ class S3_baongay():
         self.__s3 = boto3.resource('s3')
             
     
-    def upload_file(self, bucket_name, file, public_access):
+    def upload_file(self, bucket_name, file, file_slug, public_access):
         '''
         upload_file (File): path dẫn tới file cần upload
         bucket_name (str): tên bucket
@@ -30,6 +30,11 @@ class S3_baongay():
         is_image = False
         upload_slug = None
         file_name = file.filename
+        
+        if file_slug[0] == '/':
+            upload_slug = file_slug[1:]
+        else:
+            upload_slug = file_slug
 
         # Xét xem file có dc hỗ trợ không 
         file_type = self.get_file_type(file_name)
@@ -37,7 +42,7 @@ class S3_baongay():
             return HandleReturn().response(500, False, 'Định dạng file không hỗ trợ')
         else:
             if file_type != 'image':
-                key = file_type+'/'+file_name
+                key = file_type+'/'+upload_slug
             elif file_type == 'image':
                 key = file_type+'/'
                 is_image = True
@@ -53,12 +58,13 @@ class S3_baongay():
             bucket_name=bucket_name, 
             key=key, 
             extra_args=extra_args,
+            upload_slug=upload_slug,
             is_image=is_image
         )
         return result
 
             
-    def upload_to_s3(self, upload_file, bucket_name, key, extra_args, is_image=False):
+    def upload_to_s3(self, upload_file, bucket_name, key, extra_args, upload_slug, is_image=False):
         try:
             write_file(upload_file)
             file_name = upload_file.filename
@@ -75,13 +81,13 @@ class S3_baongay():
                 self.__s3.meta.client.upload_file(
                     image_resized_PC_name, 
                     bucket_name, 
-                    f'{key}PC/{file_name}',
+                    f'{key}PC/{upload_slug}',
                     ExtraArgs=extra_args
                 )
                 self.__s3.meta.client.upload_file(
                     image_resized_MOBILE_name, 
                     bucket_name, 
-                    f'{key}MOBILE/{file_name}',
+                    f'{key}MOBILE/{upload_slug}',
                     ExtraArgs=extra_args
                 )
             else:
