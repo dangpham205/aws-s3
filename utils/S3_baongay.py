@@ -58,7 +58,7 @@ class S3_baongay():
 
             
     def upload_to_s3(self, file_slug, bucket_name, key, extra_args, is_image=False):
-        # try:
+        try:
             file_name = file_slug.split('/')[-1]
             write_file(file_slug)
             if is_image:
@@ -83,17 +83,17 @@ class S3_baongay():
                     f'{key}MOBILE/{file_slug}',
                     ExtraArgs=extra_args
                 )
-        #     else:
-        #         self.__s3.meta.client.upload_file(
-        #             file_name, 
-        #             bucket_name, 
-        #             key,
-        #             ExtraArgs=extra_args
-        #         )
-        #     return HandleReturn().response(200, True, 'Tải lên thành công')
-        # except Exception:
-        #     return HandleReturn().response(500, False, 'Somewhere went wrong')
-        # finally:
+            else:
+                self.__s3.meta.client.upload_file(
+                    file_name, 
+                    bucket_name, 
+                    key,
+                    ExtraArgs=extra_args
+                )
+            return HandleReturn().response(200, True, 'Tải lên thành công')
+        except Exception:
+            return HandleReturn().response(500, False, 'Somewhere went wrong')
+        finally:
             if is_image:
                 delete_file(image_resized_PC_name)
                 delete_file(image_resized_MOBILE_name)
