@@ -13,26 +13,26 @@ router = APIRouter(
 )
 
 
-@router.post('/upload_single', summary='upload không public')
-async def upload(file_slug: str, file: UploadFile = File(...)):
-    """
-    +file_slug (str): location/new_name mà file sẽ đc lưu\n
-    +file (File): file cần upload
-    """
-    s3 = S3_baongay()
-    result = verify_file_type(file.filename, file_slug)
-    if not result:
-        return HandleReturn().response(500, False, 'Định dạng file bị thay đổi')
+# @router.post('/upload_single', summary='upload không public')
+# async def upload(file_slug: str, file: UploadFile = File(...)):
+#     """
+#     +file_slug (str): location/new_name mà file sẽ đc lưu\n
+#     +file (File): file cần upload
+#     """
+#     s3 = S3_baongay()
+#     result = verify_file_type(file.filename, file_slug)
+#     if not result:
+#         return HandleReturn().response(500, False, 'Định dạng file bị thay đổi')
 
-    result = s3.upload_file(
-        bucket_name = config('BUCKET_NAME'),
-        file = file, 
-        file_slug=file_slug,
-        public_access=False
-    )
-    return result
+#     result = s3.upload_file(
+#         bucket_name = config('BUCKET_NAME'),
+#         file = file, 
+#         file_slug=file_slug,
+#         public_access=False
+#     )
+#     return result
 
-@router.post('/upload_multiple', summary='upload nhiều file cùng lúc')
+@router.post('/uploads3', summary='upload nhiều file cùng lúc')
 async def upload_multi(file_slugs: List[str], files: List[UploadFile] = File(...)):
 # async def upload_multi(list: List[upload_multiple_schema]):
     """
