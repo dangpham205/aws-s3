@@ -98,7 +98,7 @@ class S3_baongay():
                     ExtraArgs=extra_args
                 )
         except Exception:
-            return HandleReturn().response(500, False, 'Somewhere went wrong')
+            return HandleReturn().response(500, False, 'Something went wrong')
         finally:
             if is_image:
                 delete_file(image_resized_PC_name)
@@ -116,13 +116,13 @@ class S3_baongay():
             invalidation_key = '/'+key
             res = self.create_cloudfront_invalidation(key=invalidation_key)
             if not res:
-                return HandleReturn().response(500, False, 'Somewhere went wrong :D')
+                return HandleReturn().response(500, False, 'Something went wrong :D')
 
         try:
             self.__s3.meta.client.delete_object(Bucket=bucket_name, Key=key)
             return HandleReturn().response(200, True, 'Xóa thành công')
         except Exception:
-            return HandleReturn().response(500, False, 'Somewhere went wrong :D')
+            return HandleReturn().response(500, False, 'Something went wrong :D')
         
             
     def get_presigned_url(self, file_slug, expire_time=60, size=None):

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, File, UploadFile
+from fastapi import APIRouter, File, UploadFile, Form
 from utils.S3_baongay import S3_baongay
 from typing import List
 from utils.schemas import *
@@ -32,6 +32,43 @@ async def upload(file_slug: str, file: UploadFile = File(...)):
     )
     return result
 
+@router.post('/upload_multiple', summary='upload nhiều file cùng lúc')
+async def upload_multi(file_slugs: List[str], files: List[UploadFile] = File(...)):
+# async def upload_multi(list: List[upload_multiple_schema]):
+    """
+    +file_slugs (str): location/new_name mà file sẽ đc lưu\n
+    +files (File): file cần upload
+    """
+    output = []
+    slugs = file_slugs[0].split(',')
+    if len(slugs) != len(files):
+        return HandleReturn().response(422, False, 'Số file và số slug đang không bằng nhau')
+
+    s3 = S3_baongay()
+    for slug, file in zip(slugs, files):
+        result = verify_file_type(file.filename, slug)
+        if not result:
+            return HandleReturn().response(500, False, f'Định dạng file bị thay đổi: {slug, file.filename }')
+
+        file_type = s3.get_file_type(file.filename)
+        if not file_type:
+            return HandleReturn().response(500, False, f'Định dạng file không hỗ trợ: {file.filename}')
+
+    for slug, file in zip(slugs, files):
+        result = s3.upload_file(
+            bucket_name = config('BUCKET_NAME'),
+            file = file, 
+            file_slug=slug,
+            public_access=False
+        )
+        output.append({
+            'file': file.filename,
+            'succeeded': result['result'],
+            'message': result['data']
+        })
+
+    return HandleReturn().response(200, True, output)
+
 
 @router.post('/get_presigned_url', summary='Lấy presigned url')
 async def get_presigned(list: List[presigned_schema]):
@@ -43,6 +80,8 @@ async def get_presigned(list: List[presigned_schema]):
     s3 = S3_baongay()
     output = []
     for obj in list:
+        if obj.file_slug[0] == '/':
+            obj.file_slug = obj.file_slug[1:]
         result = s3.get_presigned_url(file_slug=obj.file_slug, expire_time=obj.expire_time, size=obj.size)
         output.append(result)
     return output
