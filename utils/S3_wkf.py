@@ -122,4 +122,5 @@ class S3_wkf():
         elif file_extension == 'mp3' or file_extension == 'wav':
             return 'sound'
         else:
-            return False
+            return 
+        
