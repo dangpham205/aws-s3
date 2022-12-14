@@ -13,4 +13,3 @@ class presigned_schema_wkf(BaseModel):
 class upload_multiple_schema(BaseModel):
     file_slug: str
     file: UploadFile = File(...)
-    

@@ -3,6 +3,7 @@ from utils.S3_baongay import S3_baongay
 from typing import List
 from utils.schemas import *
 from decouple import config
+import json
 from utils.handle_return import HandleReturn
 
 router = APIRouter(
@@ -32,15 +33,23 @@ router = APIRouter(
 #     )
 #     return result
 
+    
 @router.post('/uploads3', summary='upload nhiều file cùng lúc')
-async def upload_multi(file_slugs: List[str], files: List[UploadFile] = File(...)):
+async def upload_multi(list_res_info: str = Form(...), files: List[UploadFile] = File(...)):
 # async def upload_multi(list: List[upload_multiple_schema]):
     """
     +file_slugs (str): location/new_name mà file sẽ đc lưu\n
     +files (File): file cần upload
     """
     output = []
-    slugs = file_slugs[0].split(',')
+    slugs = []
+    list_resource_info = json.loads(list_res_info)
+    for res_info in list_resource_info:
+        if res_info['resource_path']:
+            slugs.append(res_info['resource_path'])
+        else:
+            return HandleReturn().response(500, False, 'Đã xảy ra lỗi, xin liên hệ admin (thiếu field resource_path)')
+        
     if len(slugs) != len(files):
         return HandleReturn().response(422, False, 'Số file và số slug đang không bằng nhau')
 
@@ -95,5 +104,3 @@ def verify_file_type(current_file_name, upload_file_name):
     file_type_2 = file_name_2.split('.')[-1]
 
     return file_type_1 == file_type_2
-
-        
