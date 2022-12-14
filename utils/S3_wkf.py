@@ -88,8 +88,8 @@ class S3_wkf():
         )
         
         data = {
-            'url': url,
-            'content-type': self.content_types[file_type]
+            'uri': url,
+            'fileType': self.content_types[file_type]
         }
         
         return HandleReturn().response(200, True, data)
