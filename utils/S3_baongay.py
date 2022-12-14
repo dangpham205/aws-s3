@@ -171,15 +171,22 @@ class S3_baongay():
 
         # allowed_file_types = ['doc', 'docx', 'xls', 'xlsx', 'jpeg', 'jpg', 'png', 'PNG']
         
+        words = ['doc', 'docx']
+        spreadsheet = ['xls', 'xlsx']
+        images = ['jpeg', 'jpg', 'png', 'PNG']
+        pdf = ['pdf']
+        video = ['mp4']
+        sound = ['wav', 'mp3']
+        
         # if file_extension == 'doc' or file_extension == 'docx':
         #     return 'word'
         # elif file_extension == 'xls' or file_extension == 'xlsx':
         #     return 'excel'
-        if file_extension == 'jpeg' or file_extension == 'png' or file_extension == 'jpg' or file_extension == 'PNG':
+        if file_extension in images:
             return 'image'
-        elif file_extension == 'mp4':
+        elif file_extension in video:
             return 'video'
-        elif file_extension == 'mp3' or file_extension == 'wav':
+        elif file_extension in sound:
             return 'sound'
         else:
             return False

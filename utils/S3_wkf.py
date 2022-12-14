@@ -109,6 +109,13 @@ class S3_wkf():
 
         # allowed_file_types = ['doc', 'docx', 'xls', 'xlsx', 'jpeg', 'jpg', 'png', 'PNG']
         
+        words = ['doc', 'docx']
+        spreadsheet = ['xls', 'xlsx']
+        images = ['jpeg', 'jpg', 'png', 'PNG']
+        pdf = ['pdf']
+        video = ['mp4']
+        sound = ['wav', 'mp3']
+        
         if file_extension == 'doc' or file_extension == 'docx':
             return 'word'
         elif file_extension == 'xls' or file_extension == 'xlsx':
