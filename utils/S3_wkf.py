@@ -119,7 +119,7 @@ class S3_wkf():
             return 'pdf'
         elif file_extension == 'mp4':
             return 'video'
-        elif file_extension == 'mp3':
+        elif file_extension == 'mp3' or file_extension == 'wav':
             return 'sound'
         else:
             return False
