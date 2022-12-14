@@ -16,3 +16,9 @@ CORS policy cho bucket
         "MaxAgeSeconds": 3000
     }
 ]
+
+Unknown parameter in input: "ContentType", must be one of: 
+Bucket, IfMatch, IfModifiedSince, IfNoneMatch, IfUnmodifiedSince, Key, Range, 
+ResponseCacheControl, ResponseContentDisposition, ResponseContentEncoding, ResponseContentLanguage, 
+ResponseContentType, ResponseExpires, VersionId, SSECustomerAlgorithm, SSECustomerKey, SSECustomerKeyMD5, 
+RequestPayer, PartNumber, ExpectedBucketOwner, ChecksumMode

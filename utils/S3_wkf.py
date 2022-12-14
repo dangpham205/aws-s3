@@ -81,12 +81,18 @@ class S3_wkf():
             ClientMethod='get_object', 
             Params={
                 'Bucket': bucket_name, 
-                'Key': key
+                'Key': key,
+                'ResponseContentType': self.content_types[file_type]
             },
             ExpiresIn=expires_time #second
         )
         
-        return HandleReturn().response(200, True, url)
+        data = {
+            'url': url,
+            'content-type': self.content_types[file_type]
+        }
+        
+        return HandleReturn().response(200, True, data)
         
     def get_file_type(self, filename):
         """
