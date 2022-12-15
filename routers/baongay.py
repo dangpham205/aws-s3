@@ -39,10 +39,11 @@ async def upload_multi(list_res_info: str = Form(...), file: List[UploadFile] = 
 # async def upload_multi(list: List[upload_multiple_schema]):
     """
     +file_slugs (str): location/new_name mà file sẽ đc lưu\n
-    +file (File): file cần upload
+    +files (File): file cần upload
     """
     output = []
     slugs = []
+    files = file
     list_resource_info = json.loads(list_res_info)
     for res_info in list_resource_info:
         if res_info['resource_path']:
@@ -50,11 +51,11 @@ async def upload_multi(list_res_info: str = Form(...), file: List[UploadFile] = 
         else:
             return HandleReturn().response(500, False, 'Đã xảy ra lỗi, xin liên hệ admin (thiếu field resource_path)')
         
-    if len(slugs) != len(file):
+    if len(slugs) != len(files):
         return HandleReturn().response(422, False, 'Số file và số slug đang không bằng nhau')
 
     s3 = S3_baongay()
-    for slug, file in zip(slugs, file):
+    for slug, file in zip(slugs, files):
         result = verify_file_type(file.filename, slug)
         if not result:
             return HandleReturn().response(500, False, f'Định dạng file bị thay đổi: {slug, file.filename }')
@@ -63,7 +64,7 @@ async def upload_multi(list_res_info: str = Form(...), file: List[UploadFile] = 
         if not file_type:
             return HandleReturn().response(500, False, f'Định dạng file không hỗ trợ: {file.filename}')
 
-    for slug, file in zip(slugs, file):
+    for slug, file in zip(slugs, files):
         result = s3.upload_file(
             bucket_name = config('BUCKET_NAME'),
             file = file, 
