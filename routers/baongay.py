@@ -35,11 +35,11 @@ router = APIRouter(
 
     
 @router.post('/uploads3', summary='upload nhiều file cùng lúc')
-async def upload_multi(list_res_info: str = Form(...), files: List[UploadFile] = File(...)):
+async def upload_multi(list_res_info: str = Form(...), file: List[UploadFile] = File(...)):
 # async def upload_multi(list: List[upload_multiple_schema]):
     """
     +file_slugs (str): location/new_name mà file sẽ đc lưu\n
-    +files (File): file cần upload
+    +file (File): file cần upload
     """
     output = []
     slugs = []
@@ -50,11 +50,11 @@ async def upload_multi(list_res_info: str = Form(...), files: List[UploadFile] =
         else:
             return HandleReturn().response(500, False, 'Đã xảy ra lỗi, xin liên hệ admin (thiếu field resource_path)')
         
-    if len(slugs) != len(files):
+    if len(slugs) != len(file):
         return HandleReturn().response(422, False, 'Số file và số slug đang không bằng nhau')
 
     s3 = S3_baongay()
-    for slug, file in zip(slugs, files):
+    for slug, file in zip(slugs, file):
         result = verify_file_type(file.filename, slug)
         if not result:
             return HandleReturn().response(500, False, f'Định dạng file bị thay đổi: {slug, file.filename }')
@@ -63,7 +63,7 @@ async def upload_multi(list_res_info: str = Form(...), files: List[UploadFile] =
         if not file_type:
             return HandleReturn().response(500, False, f'Định dạng file không hỗ trợ: {file.filename}')
 
-    for slug, file in zip(slugs, files):
+    for slug, file in zip(slugs, file):
         result = s3.upload_file(
             bucket_name = config('BUCKET_NAME'),
             file = file, 
