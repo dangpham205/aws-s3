@@ -1,4 +1,5 @@
-from fastapi import APIRouter, File, UploadFile, Form
+from fastapi import APIRouter, Depends, File, UploadFile, Form
+from depends.auth_bearer import JWTBearer
 from utils.S3_baongay import S3_baongay
 from typing import List
 from utils.schemas import *
@@ -35,7 +36,7 @@ router = APIRouter(
 
     
 @router.post('/uploads3', summary='upload nhiều file cùng lúc')
-async def upload_multi(list_res_info: str = Form(...), file: List[UploadFile] = File(...)):
+async def upload_multi(list_res_info: str = Form(...), file: List[UploadFile] = File(...), regetToken=Depends(JWTBearer())):
 # async def upload_multi(list: List[upload_multiple_schema]):
     """
     +file_slugs (str): location/new_name mà file sẽ đc lưu\n
@@ -81,7 +82,7 @@ async def upload_multi(list_res_info: str = Form(...), file: List[UploadFile] = 
 
 
 @router.post('/get_presigned_url', summary='Lấy presigned url')
-async def get_presigned(list: List[presigned_schema]):
+async def get_presigned(list: List[presigned_schema], regetToken=Depends(JWTBearer())):
     """
     +file_slug (str): tên file cần lấy\n
     +size (str | nullable): nếu là ảnh thì truyền vô, accepted values: 'PC' / 'MOBILE'\n

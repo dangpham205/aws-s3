@@ -1,7 +1,9 @@
-from fastapi import APIRouter, File, UploadFile
+from fastapi import APIRouter, Depends, File, UploadFile
 from utils.S3_wkf import S3_wkf
 from utils.schemas import *
 from decouple import config
+# from depends.auth_bearer import JWTBearer
+from depends.auth_bearer import JWTBearer
 
 router = APIRouter(
     prefix="/workflow",
@@ -11,11 +13,11 @@ router = APIRouter(
 )
 
 @router.get('/')
-async def root():
+async def root(regetToken=Depends(JWTBearer())):
     return {'root': 'workflow'}
 
 @router.post('/upload_single', summary='upload không public')
-async def upload(file: UploadFile = File(...)):
+async def upload(file: UploadFile = File(...), regetToken=Depends(JWTBearer())):
     """
     +file (File): file cần upload, must be unique\n
     """
@@ -29,7 +31,7 @@ async def upload(file: UploadFile = File(...)):
 
 
 @router.post('/get_presigned_url', summary='Lấy presigned url')
-async def get_presigned(obj: presigned_schema_wkf):
+async def get_presigned(obj: presigned_schema_wkf, regetToken=Depends(JWTBearer())):
     """
     +file_name (str): tên file cần lấy\n
     +expires_time (int | nullable): số second url có hiệu lực, default 60 seconds\n
