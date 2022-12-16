@@ -45,6 +45,8 @@ async def upload_multi(list_res_info: str = Form(...), file: List[UploadFile] = 
     slugs = []
     files = file
     
+    print('Đang dc truy cập: /uploads3')
+    
     if not list_res_info:
         return HandleReturn().response(500, False, 'list_resource_info phải là JSON' )
     try:
