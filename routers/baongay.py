@@ -16,20 +16,19 @@ router = APIRouter(
 
 
 # @router.post('/upload_single', summary='upload không public')
-# async def upload(file_slug: str, file: UploadFile = File(...)):
+# async def upload(file: UploadFile = File(...)):
 #     """
 #     +file_slug (str): location/new_name mà file sẽ đc lưu\n
 #     +file (File): file cần upload
 #     """
 #     s3 = S3_baongay()
-#     result = verify_file_type(file.filename, file_slug)
+#     result = verify_file_type(file.filename)
 #     if not result:
 #         return HandleReturn().response(500, False, 'Định dạng file bị thay đổi')
 
 #     result = s3.upload_file(
 #         bucket_name = config('BUCKET_NAME'),
 #         file = file, 
-#         file_slug=file_slug,
 #         public_access=False
 #     )
 #     return result
@@ -45,7 +44,13 @@ async def upload_multi(list_res_info: str = Form(...), file: List[UploadFile] = 
     output = []
     slugs = []
     files = file
-    list_resource_info = json.loads(list_res_info)
+    
+    if not list_res_info:
+        return HandleReturn().response(500, False, 'list_resource_info phải là JSON' )
+    try:
+        list_resource_info = json.loads(list_res_info)
+    except Exception:
+        return HandleReturn().response(500, False, 'list_resource_info phải là JSON' )
     for res_info in list_resource_info:
         if res_info['resource_path']:
             slugs.append(res_info['resource_path'])
