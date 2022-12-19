@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, File, UploadFile
-from utils.S3_wkf import S3_wkf
+from classes.S3_wkf import S3_wkf
 from utils.schemas import *
 from decouple import config
 # from depends.auth_bearer import JWTBearer

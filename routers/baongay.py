@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, File, UploadFile, Form
 from depends.auth_bearer import JWTBearer
-from utils.S3_baongay import S3_baongay
+from classes.S3_baongay import S3_baongay
 from typing import List
 from utils.schemas import *
 from decouple import config

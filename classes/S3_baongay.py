@@ -173,8 +173,8 @@ class S3_baongay():
         
         words = ['doc', 'docx']
         spreadsheet = ['xls', 'xlsx']
-        images = ['jpeg', 'jpg', 'png', 'PNG']
         pdf = ['pdf']
+        images = ['jpeg', 'jpg', 'png', 'PNG']
         video = ['mp4']
         sound = ['wav', 'mp3']
         
