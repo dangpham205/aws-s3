@@ -27,3 +27,13 @@ async def upload(resource_type: str = Form(...), file: UploadFile = File(...), r
         public_access=True
     )
     return result
+
+@router.get('/get_url', summary='Lấy presigned url')
+async def get_presigned(file_name: str, regetToken=Depends(JWTBearer())):
+    """
+    +file_name (str): tên file cần lấy\n
+    +expires_time (int | nullable): số second url có hiệu lực, default 60 seconds\n
+    """
+    s3 = S3_public()
+    result = s3.get_presigned_url(file_name=file_name)
+    return result

@@ -86,6 +86,21 @@ class S3_public():
                 delete_file(image_resized_name)
             delete_file(file_name)
             return HandleReturn().response(200, True, 'Tải lên thành công')
+        
+    def get_presigned_url(self, file_name):
+        
+        bucket_name = config('BUCKET_NAME_PUBLIC')
+        key = None
+        
+        file_type = self.get_file_type(file_name)
+        if not file_type:
+            return HandleReturn().response(500, False, 'Định dạng file không hỗ trợ')
+        else:
+            key = file_type+'/'+file_name
+
+        url = f'https://haidawng-bucket-public.s3.amazonaws.com/{key}'
+        
+        return HandleReturn().response(200, True, url)
     
     def get_file_type(self, filename):
         """
