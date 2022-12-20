@@ -69,7 +69,7 @@ class S3_wkf_cmc():
             
     def get_presigned_url(self, file_name, expires_time=60):
         
-        bucket_name = config('BUCKET_NAME_WKF')
+        bucket_name = config('CMC_BUCKET_NAME_WKF')
         key = None
         
         file_type = self.get_file_type(file_name)

@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, File, UploadFile
-from classes.S3_wkf import S3_wkf
+from classes.S3_wkf_cmc import S3_wkf_cmc
 from utils.schemas import *
 from decouple import config
 # from depends.auth_bearer import JWTBearer
@@ -21,10 +21,10 @@ async def upload(file: UploadFile = File(...), regetToken=Depends(JWTBearer())):
     """
     +file (File): file cần upload, must be unique\n
     """
-    s3 = S3_wkf()
+    s3 = S3_wkf_cmc()
     result = s3.upload_file(
         upload_file= file, 
-        bucket_name = config('BUCKET_NAME_WKF'),
+        bucket_name = config('CMC_BUCKET_NAME_WKF'),
         public_access=False
     )
     return result
@@ -36,7 +36,7 @@ async def get_presigned(obj: presigned_schema_wkf, regetToken=Depends(JWTBearer(
     +file_name (str): tên file cần lấy\n
     +expires_time (int | nullable): số second url có hiệu lực, default 60 seconds\n
     """
-    s3 = S3_wkf()
+    s3 = S3_wkf_cmc()
     result = s3.get_presigned_url(file_name=obj.file_name, expires_time=obj.expires_time)
     return result
 
