@@ -57,7 +57,7 @@ class S3_public():
             file_name = upload_file.filename
             image_resized_name = 'RESIZED_'+file_name
 
-            if key.startswith('image/') and resource_type and resource_type == 'TRANG NHẤT':
+            if key.startswith('image/') and resource_type and resource_type == '/trangnhat':
                 image = Image.open(file_name)
                 width, height = image.size
                 new_width = 375

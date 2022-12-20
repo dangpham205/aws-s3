@@ -16,8 +16,9 @@ router = APIRouter(
 @router.post('/upload', summary='upload public')
 async def upload(resource_type: str = Form(None), file: UploadFile = File(...), regetToken=Depends(JWTBearer())):
     """
-    +reource_type (str): loại resource (TRANG NHẤT, ...)\n
-    +file (File): file cần upload, file_name must be unique\n
+    -reource_type (str): loại resource, các gtri hợp lệ hiện tại: \n
+        /trangnhat (width 375px)\n
+    -file (File): file cần upload, file_name must be unique\n
     """
     s3 = S3_public()
     result = s3.upload_file(
