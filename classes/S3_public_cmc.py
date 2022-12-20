@@ -4,7 +4,8 @@ from utils.handle_return import HandleReturn
 from PIL import Image
 from utils.utils import write_file, delete_file
 import math
-class S3_public():
+
+class S3_public_cmc:
     
     # content_type sẽ hỗ trợ show image trong browser,
     # còn word, excel sẽ buộc download
@@ -15,10 +16,11 @@ class S3_public():
         'video': 'video/mp4',
         'sound': 'audio/mpeg'
     }
-    
+
     def __init__(self):
-        self.__s3 = boto3.resource('s3')
-        
+        self.__session = boto3.Session()
+        self.__s3 = self.__session.client('s3',endpoint_url = 'https://s3-hn-2.cloud.cmctelecom.vn')
+
     def upload_file(self, bucket_name, file, resource_type, public_access):
         '''
         upload_file (File): path dẫn tới file cần upload
@@ -67,14 +69,14 @@ class S3_public():
                 image_resized_name = 'RESIZED_'+file_name
                 image_resized.save(image_resized_name)
 
-                self.__s3.meta.client.upload_file(
+                self.__s3.upload_file(
                     image_resized_name, 
                     bucket_name, 
                     f'{key}{file_name}',
                     ExtraArgs=extra_args
                 )
             else:
-                self.__s3.meta.client.upload_file(
+                self.__s3.upload_file(
                     file_name, 
                     bucket_name, 
                     f'{key}{file_name}',
@@ -84,13 +86,13 @@ class S3_public():
             return HandleReturn().response(500, False, 'Something went wrong')
         finally:
             try:
-                if key.startswith('image/') and resource_type and resource_type == '/trangnhat':
+                if key.startswith('image/') and resource_type and resource_type == 'TRANG NHẤT':
                     delete_file(image_resized_name)
             except:
                 pass
             delete_file(file_name)
             
-            url = f'https://haidawng-bucket-public.s3.amazonaws.com/{key}{file_name}'
+            url = f'https://s3-hn-2.cloud.cmctelecom.vn/haidang/{key}{file_name}'
             
             return HandleReturn().response(200, True, url)
         
