@@ -3,7 +3,7 @@ from decouple import config
 from utils.handle_return import HandleReturn
 from PIL import Image
 from utils.utils import write_file, delete_file
-
+import math
 class S3_public():
     
     # content_type sẽ hỗ trợ show image trong browser,
@@ -55,37 +55,44 @@ class S3_public():
         try:
             write_file(upload_file)
             file_name = upload_file.filename
+            image_resized_name = 'RESIZED_'+file_name
+
             if key.startswith('image/') and resource_type and resource_type == 'TRANG NHẤT':
                 image = Image.open(file_name)
                 width, height = image.size
-                if width > 375: 
-                    new_width = 375
-                    new_height = new_width * height / width
-                    image_resized = image.resize((new_width, new_height))
+                new_width = 375
+                new_height = new_width * height / width
+                
+                image_resized = image.resize((new_width, math.ceil(new_height)))
+                image_resized_name = 'RESIZED_'+file_name
+                image_resized.save(image_resized_name)
 
-                    image_resized_name = 'RESIZED_'+file_name
-
-                    image_resized.save(image_resized_name)
-                    self.__s3.meta.client.upload_file(
-                        image_resized_name, 
-                        bucket_name, 
-                        key,
-                        ExtraArgs=extra_args
-                    )
+                self.__s3.meta.client.upload_file(
+                    image_resized_name, 
+                    bucket_name, 
+                    f'{key}{file_name}',
+                    ExtraArgs=extra_args
+                )
             else:
                 self.__s3.meta.client.upload_file(
                     file_name, 
                     bucket_name, 
-                    key,
+                    f'{key}{file_name}',
                     ExtraArgs=extra_args
                 )
         except Exception:
             return HandleReturn().response(500, False, 'Something went wrong')
         finally:
-            if key.startswith('image/') and resource_type and resource_type == 'TRANG NHẤT':
-                delete_file(image_resized_name)
+            try:
+                if key.startswith('image/') and resource_type and resource_type == 'TRANG NHẤT':
+                    delete_file(image_resized_name)
+            except:
+                pass
             delete_file(file_name)
-            return HandleReturn().response(200, True, 'Tải lên thành công')
+            
+            url = f'https://haidawng-bucket-public.s3.amazonaws.com/{key}{file_name}'
+            
+            return HandleReturn().response(200, True, url)
         
     def get_presigned_url(self, file_name):
         

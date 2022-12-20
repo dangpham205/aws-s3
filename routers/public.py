@@ -14,7 +14,7 @@ router = APIRouter(
 
 
 @router.post('/upload', summary='upload public')
-async def upload(resource_type: str = Form(...), file: UploadFile = File(...), regetToken=Depends(JWTBearer())):
+async def upload(resource_type: str = Form(None), file: UploadFile = File(...), regetToken=Depends(JWTBearer())):
     """
     +reource_type (str): loại resource (TRANG NHẤT, ...)\n
     +file (File): file cần upload, file_name must be unique\n
