@@ -175,7 +175,7 @@ class S3_baongay():
         spreadsheet = ['xls', 'xlsx']
         pdf = ['pdf']
         images = ['jpeg', 'jpg', 'png', 'PNG']
-        video = ['mp4']
+        video = ['mp4', 'MP4']
         sound = ['wav', 'mp3']
         
         # if file_extension == 'doc' or file_extension == 'docx':

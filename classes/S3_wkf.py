@@ -113,7 +113,7 @@ class S3_wkf():
         spreadsheet = ['xls', 'xlsx']
         images = ['jpeg', 'jpg', 'png', 'PNG']
         pdf = ['pdf']
-        video = ['mp4']
+        video = ['mp4', 'MP4']
         sound = ['wav', 'mp3']
         
         if file_extension == 'doc' or file_extension == 'docx':
