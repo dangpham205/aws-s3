@@ -25,8 +25,6 @@ async def upload_multi(list_res_info: str = Form(...), file: List[UploadFile] = 
     slugs = []
     files = file
     
-    print('Đang dc truy cập: /uploads3')
-    
     try:
         list_resource_info = json.loads(list_res_info)
     except Exception:

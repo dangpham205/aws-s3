@@ -18,7 +18,7 @@ class S3_baongay_cmc():
     
     def __init__(self):
         self.__session = boto3.Session()
-        self.__s3 = self.__session.client('s3',endpoint_url = 'https://s3-hn-2.cloud.cmctelecom.vn')
+        self.__s3 = self.__session.client('s3',endpoint_url = config('CMC_ENDPOINT'))
             
     
     def upload_file(self, bucket_name, file, file_slug, public_access):
@@ -176,7 +176,7 @@ class S3_baongay_cmc():
         words = ['doc', 'docx']
         spreadsheet = ['xls', 'xlsx']
         pdf = ['pdf']
-        images = ['jpeg', 'jpg', 'png', 'PNG']
+        images = ['jpeg', 'jpg', 'png', 'PNG', 'webp']
         video = ['mp4']
         sound = ['wav', 'mp3']
         

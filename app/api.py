@@ -49,6 +49,6 @@ app.add_middleware(
 app.include_router(baongay.router)
 app.include_router(workflow.router)
 app.include_router(public.router)
-app.include_router(public_cmc.router)
 app.include_router(baongay_cmc.router)
 app.include_router(workflow_cmc.router)
+app.include_router(public_cmc.router)

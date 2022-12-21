@@ -19,7 +19,7 @@ class S3_public_cmc:
 
     def __init__(self):
         self.__session = boto3.Session()
-        self.__s3 = self.__session.client('s3',endpoint_url = 'https://s3-hn-2.cloud.cmctelecom.vn')
+        self.__s3 = self.__session.client('s3',endpoint_url = config('CMC_ENDPOINT'))
 
     def upload_file(self, bucket_name, file, resource_type, public_access):
         '''
@@ -86,13 +86,15 @@ class S3_public_cmc:
             return HandleReturn().response(500, False, 'Something went wrong')
         finally:
             try:
-                if key.startswith('image/') and resource_type and resource_type == 'TRANG NHẤT':
+                if key.startswith('image/') and resource_type and resource_type == '/trangnhat':
                     delete_file(image_resized_name)
             except:
                 pass
             delete_file(file_name)
             
-            url = f'https://s3-hn-2.cloud.cmctelecom.vn/haidang/{key}{file_name}'
+            endpoint = config('CMC_ENDPOINT')
+            bucket_public = config('CMC_BUCKET_NAME_PUBLIC')
+            url = f'{endpoint}/{bucket_public}/{key}{file_name}'
             
             return HandleReturn().response(200, True, url)
         
@@ -129,7 +131,7 @@ class S3_public_cmc:
         words = ['doc', 'docx']
         spreadsheet = ['xls', 'xlsx']
         pdf = ['pdf']
-        images = ['jpeg', 'jpg', 'png', 'PNG']
+        images = ['jpeg', 'jpg', 'png', 'PNG', 'webp']
         video = ['mp4']
         sound = ['wav', 'mp3']
         

@@ -15,11 +15,13 @@ class S3_wkf_cmc():
         'image': 'image/jpeg',
         'video': 'video/mp4',
         'sound': 'audio/mpeg',
+        'text': 'text/plain',
+        'powerpoint': 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
     }
     
     def __init__(self):
         self.__session = boto3.Session()
-        self.__s3 = self.__session.client('s3',endpoint_url = 'https://s3-hn-2.cloud.cmctelecom.vn')
+        self.__s3 = self.__session.client('s3',endpoint_url = config('CMC_ENDPOINT'))
         
     def upload_file(self, bucket_name, upload_file, public_access):
         '''
@@ -112,23 +114,29 @@ class S3_wkf_cmc():
         
         words = ['doc', 'docx']
         spreadsheet = ['xls', 'xlsx']
-        images = ['jpeg', 'jpg', 'png', 'PNG']
+        images = ['jpeg', 'jpg', 'png', 'PNG', 'webp']
         pdf = ['pdf']
         video = ['mp4']
         sound = ['wav', 'mp3']
+        text = ['txt']
+        powerpoint = ['ppt', 'pptx']
         
-        if file_extension == 'doc' or file_extension == 'docx':
+        if file_extension in words:
             return 'word'
-        elif file_extension == 'xls' or file_extension == 'xlsx':
+        elif file_extension in spreadsheet:
             return 'excel'
-        elif file_extension == 'jpeg' or file_extension == 'png' or file_extension == 'jpg' or file_extension == 'PNG':
+        elif file_extension in images:
             return 'image'
-        elif file_extension == 'pdf':
+        elif file_extension in pdf:
             return 'pdf'
-        elif file_extension == 'mp4':
+        elif file_extension in video:
             return 'video'
-        elif file_extension == 'mp3' or file_extension == 'wav':
+        elif file_extension in sound:
             return 'sound'
+        elif file_extension in text:
+            return 'text'
+        elif file_extension in powerpoint:
+            return 'powerpoint'
         else:
-            return 
+            return False
         
