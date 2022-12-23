@@ -2,7 +2,7 @@ import boto3
 from decouple import config
 from utils.handle_return import HandleReturn
 from PIL import Image
-from utils.utils import write_file, delete_file
+from utils.utils import write_file, delete_file, get_file_duration
 
 class S3_baongay():
     
@@ -91,6 +91,10 @@ class S3_baongay():
                     ExtraArgs=extra_args
                 )
             else:
+                duration = get_file_duration(file_name)
+                extra_args['Metadata'] = {
+                    'duration': str(duration)
+                }
                 self.__s3.meta.client.upload_file(
                     file_name, 
                     bucket_name, 
@@ -135,11 +139,21 @@ class S3_baongay():
         if not file_type:
             return HandleReturn().response(500, False, 'Định dạng file không hỗ trợ')
         else:
-            if file_type != 'image':
+            if file_type != 'image' and expire_time:
                 key = file_type+'/'+file_slug
+            elif file_type != 'image' and not expire_time:
+                key = file_type+'/'+file_slug
+                s3 = boto3.resource('s3')
+                obj = s3.Object(bucket_name, key)
+                metadata = obj.get()['Metadata']
+                expire_time = 3600
+                if 'duration' in metadata:
+                    expire_time += int(metadata['duration']) 
             elif file_type == 'image':
                 if size != 'PC' and size != 'MOBILE':
                     return HandleReturn().response(500, False, "Size ảnh phải là 1 trong các giá trị sau: 'PC', 'MOBILE' ")
+                if not expire_time:
+                    expire_time = 60
                 else:
                     key = f'{file_type}/{size}/{file_slug}'
 
@@ -176,7 +190,7 @@ class S3_baongay():
         pdf = ['pdf']
         images = ['jpeg', 'jpg', 'png', 'PNG']
         video = ['mp4', 'MP4']
-        sound = ['wav', 'mp3']
+        sound = ['wav', 'mp3', 'MP3']
         
         # if file_extension == 'doc' or file_extension == 'docx':
         #     return 'word'

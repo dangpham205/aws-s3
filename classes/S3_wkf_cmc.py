@@ -117,7 +117,7 @@ class S3_wkf_cmc():
         images = ['jpeg', 'jpg', 'png', 'PNG', 'webp']
         pdf = ['pdf']
         video = ['mp4', 'MP4']
-        sound = ['wav', 'mp3']
+        sound = ['wav', 'mp3', 'MP3']
         text = ['txt']
         powerpoint = ['ppt', 'pptx']
         

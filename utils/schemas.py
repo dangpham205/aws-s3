@@ -5,7 +5,7 @@ from fastapi import File, UploadFile
 class presigned_schema(BaseModel):
     file_slug: str 
     size: str = None
-    expire_time: int = 60
+    expire_time: int = None
 class presigned_schema_wkf(BaseModel):
     file_name: str 
     expires_time: int = 60

@@ -114,7 +114,7 @@ class S3_wkf():
         images = ['jpeg', 'jpg', 'png', 'PNG']
         pdf = ['pdf']
         video = ['mp4', 'MP4']
-        sound = ['wav', 'mp3']
+        sound = ['wav', 'mp3', 'MP3']
         
         if file_extension == 'doc' or file_extension == 'docx':
             return 'word'
