@@ -154,8 +154,7 @@ class S3_baongay():
                     return HandleReturn().response(500, False, "Size ảnh phải là 1 trong các giá trị sau: 'PC', 'MOBILE' ")
                 if not expire_time:
                     expire_time = 60
-                else:
-                    key = f'{file_type}/{size}/{file_slug}'
+                key = f'{file_type}/{size}/{file_slug}'
 
         url = boto3.client('s3').generate_presigned_url(
             ClientMethod='get_object', 
