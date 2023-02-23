@@ -55,24 +55,6 @@ def create_cloudfront_invalidation(key, distribution_id):
             'CallerReference': str(time.time()).replace(".", "")
         }
     )
-    # response mẫu
-    #{
-    #     'Location': 'string',
-    #     'Invalidation': {
-    #         'Id': 'string',
-    #         'Status': 'string',
-    #         'CreateTime': datetime(2015, 1, 1),
-    #         'InvalidationBatch': {
-    #             'Paths': {
-    #                 'Quantity': 123,
-    #                 'Items': [
-    #                     'string',
-    #                 ]
-    #             },
-    #             'CallerReference': 'string'
-    #         }
-    #     }
-    # }
     invalidation_id = res['Invalidation']['Id']
     return invalidation_id
 

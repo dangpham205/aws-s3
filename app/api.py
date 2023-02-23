@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import baongay, public_cmc, workflow, public, baongay_cmc, workflow_cmc
+from routers import baongay, workflow, public
 
 desc = """
 Phục vụ upload file ảnh, video, âm thanh
@@ -49,6 +49,3 @@ app.add_middleware(
 app.include_router(baongay.router)
 app.include_router(workflow.router)
 app.include_router(public.router)
-app.include_router(baongay_cmc.router)
-app.include_router(workflow_cmc.router)
-app.include_router(public_cmc.router)
